@@ -1,0 +1,21 @@
+/** App.css **/
+
+.background {
+  fill: none;
+  pointer-events: all;
+}
+
+#states {
+  fill: none;
+  stroke: #fff;
+  stroke-linejoin: round;
+  stroke-width: 1.5px;
+}
+
+#states .active {
+  display: none;
+}
+
+.state:hover {
+  fill: #002b5b;
+}

@@ -1,3 +1,5 @@
+![alt text](schnarmap/frontend/schnar_map/public/logo.png)
+
 <h1 align="center">
   SchnarMap
 </h1>

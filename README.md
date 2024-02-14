@@ -1,8 +1,4 @@
 ![GitHub Logo](https://github.com/shayonkeating/schnarmap/blob/main/frontend/schnar_map/public/logo.png)
-
-<h1 align="center">
-  SchnarMap
-</h1>
 <h2 align="center">
   The best schnar conditions in the United States is located here
 </h2>

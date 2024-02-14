@@ -1,4 +1,4 @@
-![alt text](schnarmap/frontend/schnar_map/public/logo.png)
+![GitHub Logo](https://github.com/shayonkeating/schnarmap/blob/main/frontend/schnar_map/public/logo.png)
 
 <h1 align="center">
   SchnarMap

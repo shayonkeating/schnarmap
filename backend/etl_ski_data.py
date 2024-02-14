@@ -13,10 +13,15 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 import pandas as pd
+import os
+import time
 
 # constants that should not change
 ski_resort_url = "https://www.onthesnow.com/skireport"
 file_path = 'resort_info.csv'
+output_directory = os.path.join('..', 'frontend', 'schnar_map', 'public', 'data')
+output_file_name = 'daily_ski.csv'
+output_file_path = os.path.join(output_directory, output_file_name)
 
 
 def scrape_ski_resorts(url):
@@ -88,11 +93,22 @@ def match_locations(df1, df2):
 
 def main():
     """Main function."""
+    # Ensure the output directory exists
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
+
+    # Delete the existing CSV file if it exists
+    if os.path.exists(output_file_path):
+        os.remove(output_file_path)
+    
+    # After deleting previous file adding a delay for security
+    time.sleep(1)
+    
     daily_ski_report = scrape_ski_resorts(ski_resort_url)
     ski_report = reformat_ski(daily_ski_report)
     ski_locations = pd.read_csv(file_path)
     load_ski = match_locations(ski_report, ski_locations)
-    load_ski.to_csv('daily_ski.csv', index=False)
+    load_ski.to_csv(output_file_path, index=False)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,10 @@
+.footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #00171F; /* Adjust the color to match your branding */
+    color: white;
+    padding: 20px;
+    font-size: 0.8rem;
+    align-items: center;
+  }

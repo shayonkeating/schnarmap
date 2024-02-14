@@ -2,6 +2,8 @@ import './App.css';
 import 'react-toastify/dist/ReactToastify.css';
 
 import React, { useEffect, useState } from "react";
+import Header from './components/Header'
+import Footer from './components/Footer'
 import * as d3 from 'd3';
 import { ToastContainer } from 'react-toastify';
 
@@ -17,10 +19,10 @@ const margin = {
   right: 10
 };
 
-const colorScale = ["#395258", "#436067", "#4d6f77", "#577d86", "#618b95", "#6f98a1"];
+const colorScale = ["#8FB1D0"];
 
 function App() {
-  // A random color generator
+  // A random color generator state to store the colors
   const colorGenerator = () => {
     return colorScale[Math.floor(Math.random() * colorScale.length)];
   };
@@ -63,25 +65,55 @@ function App() {
       .attr("class", "state")
       .attr("fill", colorGenerator);
 
+    // Tooltip container
+    const tooltip = d3.select('.viz').append('div')
+      .attr('class', 'tooltip')
+      .style('opacity', 0)
+      .style('position', 'absolute')
+      .style('padding', '10px')
+      .style('background', 'white')
+      .style('border', '1px solid black')
+      .style('border-radius', '5px')
+      .style('pointer-events', 'none');
+
     // Create a container for the points
     const pointsGroup = svg.append("g")
       .attr('class', 'points-container');
 
     // Load and plot points from CSV
     d3.csv('./data/daily_ski.csv').then(data => {
-      setResorts(data)
+      setResorts(data);
       data.forEach(point => {
-        const coords = projection([+point.lon, +point.lat]); // Plot the points from the csv
-    
-        // Only proceed if projection was successful
+        const coords = projection([+point.lon, +point.lat]);
         if (coords) {
           pointsGroup.append("circle")
             .attr("cx", coords[0])
             .attr("cy", coords[1])
-            .attr("r", 5) 
+            .attr("r", 5)
             .attr("fill", "red")
             .attr("stroke", "black")
-            .attr("stroke-width", .3);
+            .attr("stroke-width", 0.3)
+            .on("mouseover", function(event, d) {
+              d3.select(this)
+                .transition()
+                .duration(200)
+                .attr("r", 10);
+              tooltip.transition()
+                .duration(200)
+                .style('opacity', 1);
+              tooltip.html(point["Resort Name"] + "<br/>" + point.state + "<br/>" + point["72 Hour Snowfall"])
+                .style('left', (event.pageX) + 'px')
+                .style('top', (event.pageY - 50) + 'px');
+            })
+            .on("mouseout", function(event, d) {
+              d3.select(this)
+                .transition()
+                .duration(200)
+                .attr("r", 5);
+              tooltip.transition()
+                .duration(500)
+                .style('opacity', 0);
+            });
         } else {
           console.warn('Coordinates could not be projected:', point);
         }
@@ -89,13 +121,12 @@ function App() {
     }).catch(error => {
       console.error('Error loading or processing CSV:', error);
     });
-    
   }, []);
   
   return (
     <div>
+      <Header></Header>
       <div className="viz"></div>
-      {/* Ski Resort List rendering starts here */}
       <div className="ski-resort-list">
       <h2 class="centered">Your Daily Schnar Forecast</h2>
         <div className="table">
@@ -119,8 +150,8 @@ function App() {
           </div>
         </div>
       </div>
-      {/* Ski Resort List rendering ends here */}
       <ToastContainer />
+      <Footer></Footer>
     </div>
   );
 }

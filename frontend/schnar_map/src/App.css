@@ -42,9 +42,9 @@
 
 .table {
   width: 100%;
-  max-width: 10000px; /* Adjust this to your preferred max width */
+  max-width: 10000px;
   border-collapse: collapse;
-  margin: 0 auto; /* This centers the table if it has a width less than the container */
+  margin: 0 auto;
 }
 
 .table-header, .table-row {
@@ -55,7 +55,7 @@
 .header__item, .table-data {
   flex: 1;
   text-align: center;
-  padding: 10px; /* Adjust padding to match your design */
+  padding: 10px;
 }
 
 .table-header {
@@ -74,4 +74,47 @@
 
 .table-row:nth-child(even) {
   background-color: #f9f9f9;
+}
+
+.table-row:nth-child(odd) {
+  background-color: #f9f9f9;
+}
+
+.tooltip {
+  width: 100px;
+  text-align: center;
+}
+
+:root {
+  --bg-color: #f5f5f5;
+  --input-color: #111;
+}
+
+body {
+  background-color: var(--bg-color);
+}
+
+.dark-mode {
+  --bg-color: #00171F;
+  --input-color: #f5f5f5;
+}
+
+/* dark mode inputs */
+body.dark-mode .table-row {
+  background-color: #333;
+  color: white; 
+}
+
+body.dark-mode .table-header {
+  background-color: #333;
+  color: white;
+}
+
+body.dark-mode .ski-resort-list {
+  background-color: #333;
+  color: white;
+}
+
+body.dark-mode #states {
+  stroke: #00171F;
 }

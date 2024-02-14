@@ -1,9 +1,9 @@
 <h1 align="center">
   SchnarMap
 </h1>
-<h3 align="center">
+<h2 align="center">
   The best schnar conditions in the United States is located here
-</h3>
+</h2>
 </p>
 
 ## What is SchnarMap?

@@ -6,18 +6,6 @@
     padding: 15px 30px;
   }
   
-  .header-nav ul {
-    list-style: none;
-    display: flex;
-    gap: 30px;
-  }
-  
-  .header-nav a {
-    text-decoration: none;
-    color: white;
-    font-weight: bold;
-  }
-
   .theme-switch {
     display: inline-block;
     height: 34px;

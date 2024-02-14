@@ -1,6 +1,6 @@
+// import reqs
 import './App.css';
 import 'react-toastify/dist/ReactToastify.css';
-
 import React, { useEffect, useState } from "react";
 import Header from './components/Header'
 import Footer from './components/Footer'
@@ -12,15 +12,24 @@ import stateData from "./data/states.json";
 
 const mapRatio = 0.5;
 
-const margin = {
-  top: 10,
-  bottom: 10,
-  left: 10,
-  right: 10
-};
+const margin = {top: 10, bottom: 10, left: 10 ,right: 10 };
 
 const colorScale = ["#8FB1D0"];
 
+// Function to fetch the CSV data
+export const fetchSkiData = () => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      d3.csv('./data/daily_ski.csv')
+        .then(resolve)
+        .catch(reject);
+    },  1000); // Should be quick (about 1 second delay)
+  }).catch(error => {
+    console.error('Error loading or processing CSV:', error);
+  });
+};
+
+// Function to display the US map with ski resorts and functionality (probably should be split up)
 function App() {
   // A random color generator state to store the colors
   const colorGenerator = () => {
@@ -29,6 +38,31 @@ function App() {
 
   // State to store ski resort data
   const [resorts, setResorts] = useState([]);
+
+  const resizeMap = () => {
+    const containerWidth = parseInt(d3.select('.viz').style('width'));
+    let width = containerWidth - margin.left - margin.right;
+    let height = width * mapRatio;
+
+    d3.select('.viz svg')
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom);
+
+    const projection = d3.geoAlbersUsa()
+      .translate([width / 2, height / 2])
+      .scale(width);
+    // Update the path generator
+    const pathGenerator = d3.geoPath().projection(projection);
+
+    d3.selectAll("#states path")
+      .attr("d", pathGenerator);
+
+    // Update points position based on the new projection
+    d3.selectAll(".points-container circle").attr("transform", function(d) {
+      const coords = projection([+d.lon, +d.lat]);
+      return coords ? `translate(${coords})` : null;
+    });
+  };
 
   useEffect(() => {
     if (!d3.select('.viz svg').empty()) {
@@ -55,6 +89,7 @@ function App() {
       .attr('class', 'center-container center-items us-state')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
   
+    // Map States Container
     statesGroup.append("g")
       .attr("id", "states")
       .selectAll("path")
@@ -81,7 +116,7 @@ function App() {
       .attr('class', 'points-container');
 
     // Load and plot points from CSV
-    d3.csv('./data/daily_ski.csv').then(data => {
+    fetchSkiData().then(data => {
       setResorts(data);
       data.forEach(point => {
         const coords = projection([+point.lon, +point.lat]);
@@ -121,8 +156,22 @@ function App() {
     }).catch(error => {
       console.error('Error loading or processing CSV:', error);
     });
-  }, []);
+
+    // Call resizeMap initially to set up the correct sizes
+    resizeMap();
+
+    // Add resize event listener
+    window.addEventListener('resize', resizeMap);
+
+    return () => {
+      // Cleanup
+      window.removeEventListener('resize', resizeMap);
+    };
+
+  }, []); // end of use effect for the US map
   
+
+
   return (
     <div>
       <Header></Header>
@@ -157,4 +206,3 @@ function App() {
 }
 
 export default App;
-

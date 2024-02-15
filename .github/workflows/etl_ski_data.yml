@@ -1,0 +1,31 @@
+name: Run ETL Ski Data Script
+
+on:
+  schedule:
+    - cron: '0 8 * * *' # Runs at 8:00 AM UTC every day
+
+jobs:
+  update-csv:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.11.7'
+
+    - name: Install dependencies
+      run: pip install requests beautifulsoup4 pandas
+
+    - name: Run ETL Script
+      run: python3 etl_ski_data.py
+
+    - name: Commit and push if changes
+      run: |
+        git config --global user.email "actions@users.noreply.github.com"
+        git config --global user.name "Github Actions"
+        git add frontend/schnar_map/public/data/daily_ski.csv # Update this path to your CSV file
+        git commit -m "Update CSV with latest data" || exit 0
+        git push

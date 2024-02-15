@@ -19,7 +19,7 @@ import time
 # constants that should not change
 ski_resort_url = "https://www.onthesnow.com/skireport"
 file_path = 'backend/resort_info.csv'
-output_directory = os.path.join('..', 'frontend', 'schnar_map', 'public', 'data')
+output_directory = os.getenv('GITHUB_WORKSPACE', '.') + '/frontend/schnar_map/public/data'
 output_file_name = 'daily_ski.csv'
 output_file_path = os.path.join(output_directory, output_file_name)
 

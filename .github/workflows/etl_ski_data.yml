@@ -2,7 +2,8 @@ name: Run ETL Ski Data Script
 
 on:
   schedule:
-    - cron: '0 8 * * *' # Runs at 8:00 AM UTC every day
+    - cron: '0 19 * * *'
+    - cron: '0 8 * * *'
 
 jobs:
   update-csv:

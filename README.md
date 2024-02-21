@@ -4,14 +4,14 @@
 </h2>
 </p>
 
-## What is SchnarMap?
+## 🚀 What is SchnarMap?
 
 SchnarMap is a web application that extracts transforms and loads current pow conditions into a user friendly website and dashboard that shows where in the United States currently have the best ski/snowboard conditions.
 
-You can interact with the map and see where the best conditions exist from the last 72 hours. It is updated daily to reflect to ongoing change of conditions.
+You can interact with the map and see where the best conditions exist from the last 72 hours. It is updated daily cause we all know those pow conditions won't last.
 
 
-### Installation and development
+## 🚦 Running the Project
 
 This website is open source and as such would love feedback and if other people also want to work on it as well. I can only do so much.
 
@@ -26,3 +26,21 @@ npm install
 ```shell
 npm start
 ```
+
+## 🛠️ Technologies
+
+- `Python`
+- `react.js`
+- `Javascript`
+- `Vercel`
+
+## 💡 Improvements
+
+- Adding bars to separate the columns 🧑🏻‍💻
+- Gaining access to a better API to pull weather data from 🧑🏻‍💻
+- Making a cooler logo and adding a webstore with merch 🧑🏻‍💻
+  * If anyone is good with branding please reach out *
+
+## 🐞 Issues
+
+- Version 1.0.0

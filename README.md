@@ -39,7 +39,7 @@ npm start
 - Adding bars to separate the columns 🧑🏻‍💻
 - Gaining access to a better API to pull weather data from 🧑🏻‍💻
 - Making a cooler logo and adding a webstore with merch 🧑🏻‍💻
-  * If anyone is good with branding please reach out *
+  * If anyone is good with branding please reach out
 
 ## 🐞 Issues
 

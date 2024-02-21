@@ -43,4 +43,4 @@ npm start
 
 ## 🐞 Issues
 
-- Version 1.0.0
+- Misalignment of lat/lon on projection, manually adjust lat/lon when issue arises from master

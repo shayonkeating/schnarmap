@@ -1,3 +1,4 @@
 Resort Name,72 Hour Snowfall,Base Depth,Trails open,Open lifts,state,summit,base,vertical,lifts,runs,acres,green_percent,green_acres,blue_percent,blue_acres,black_percent,black_acres,lat,lon
-Alyeska,"24""","51-152""Packed Powder",72,7/7,Alaska,3939.0,250.0,2500.0,9.0,73.0,1500,0.11,165.0,0.52,780.0,0.37,555.0,60.97,-149.11
 Eldora,"5""","40""Machine Groomed",61,10/10,Colorado,10800.0,9200.0,1600.0,12.0,53.0,680,0.2,136.0,0.5,340.0,0.3,204.0,39.94,-105.56
+Copper,"3""","60-69""Packed Powder",149,21/24,Colorado,12313.0,9712.0,2601.0,22.0,127.0,2465,0.21,517.65,0.25,616.25,0.54,1331.1,39.46,-106.17
+Mt. Baker,"1""","101-119""Machine Groomed",36,7/10,Washington,5050.0,3500.0,1500.0,10.0,38.0,1000,0.24,240.0,0.45,450.0,0.31,310.0,48.78,-121.81

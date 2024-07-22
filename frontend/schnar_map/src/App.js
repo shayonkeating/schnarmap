@@ -12,7 +12,7 @@ import stateData from "./data/states.json";
 
 const mapRatio = 0.5;
 
-const margin = {top: 10, bottom: 10, left: 10 ,right: 10 };
+const margin = { top: 10, bottom: 10, left: 10, right: 10 };
 
 const colorScale = ["#8FB1D0"];
 
@@ -21,9 +21,15 @@ export const fetchSkiData = () => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       d3.csv('./data/daily_ski.csv')
-        .then(resolve)
+        .then(data => {
+          if (data.length === 0) {
+            resolve(null); // Resolve with null if the CSV is empty
+          } else {
+            resolve(data);
+          }
+        })
         .catch(reject);
-    },  1000); // Should be quick (about 1 second delay)
+    }, 1000); // Should be quick (about 1 second delay)
   }).catch(error => {
     console.error('Error loading or processing CSV:', error);
   });
@@ -68,27 +74,27 @@ function App() {
     if (!d3.select('.viz svg').empty()) {
       return;
     }
-  
+
     let width = parseInt(d3.select('.viz').style('width'));
     let height = width * mapRatio;
     width = width - margin.left - margin.right;
-  
+
     const svg = d3.select('.viz').append('svg')
       .attr('class', 'center-container')
       .attr('height', height + margin.top + margin.bottom)
       .attr('width', width + margin.left + margin.right);
-  
+
     const projection = d3.geoAlbersUsa()
       .translate([width / 2, height / 2])
       .scale(width);
-  
+
     const pathGenerator = d3.geoPath()
       .projection(projection);
-  
+
     const statesGroup = svg.append("g")
       .attr('class', 'center-container center-items us-state')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-  
+
     // Map States Container
     statesGroup.append("g")
       .attr("id", "states")
@@ -117,42 +123,46 @@ function App() {
 
     // Load and plot points from CSV
     fetchSkiData().then(data => {
-      setResorts(data);
-      data.forEach(point => {
-        const coords = projection([+point.lon, +point.lat]);
-        if (coords) {
-          pointsGroup.append("circle")
-            .attr("cx", coords[0])
-            .attr("cy", coords[1])
-            .attr("r", 5)
-            .attr("fill", "red")
-            .attr("stroke", "black")
-            .attr("stroke-width", 0.3)
-            .on("mouseover", function(event, d) {
-              d3.select(this)
-                .transition()
-                .duration(200)
-                .attr("r", 10);
-              tooltip.transition()
-                .duration(200)
-                .style('opacity', 1);
-              tooltip.html(point["Resort Name"] + "<br/>" + point.state + "<br/>" + point["72 Hour Snowfall"])
-                .style('left', (event.pageX) + 'px')
-                .style('top', (event.pageY - 50) + 'px');
-            })
-            .on("mouseout", function(event, d) {
-              d3.select(this)
-                .transition()
-                .duration(200)
-                .attr("r", 5);
-              tooltip.transition()
-                .duration(500)
-                .style('opacity', 0);
-            });
-        } else {
-          console.warn('Coordinates could not be projected:', point);
-        }
-      });
+      if (data === null) {
+        setResorts([]); // Set resorts to an empty array if no data
+      } else {
+        setResorts(data);
+        data.forEach(point => {
+          const coords = projection([+point.lon, +point.lat]);
+          if (coords) {
+            pointsGroup.append("circle")
+              .attr("cx", coords[0])
+              .attr("cy", coords[1])
+              .attr("r", 5)
+              .attr("fill", "red")
+              .attr("stroke", "black")
+              .attr("stroke-width", 0.3)
+              .on("mouseover", function(event, d) {
+                d3.select(this)
+                  .transition()
+                  .duration(200)
+                  .attr("r", 10);
+                tooltip.transition()
+                  .duration(200)
+                  .style('opacity', 1);
+                tooltip.html(point["Resort Name"] + "<br/>" + point.state + "<br/>" + point["72 Hour Snowfall"])
+                  .style('left', (event.pageX) + 'px')
+                  .style('top', (event.pageY - 50) + 'px');
+              })
+              .on("mouseout", function(event, d) {
+                d3.select(this)
+                  .transition()
+                  .duration(200)
+                  .attr("r", 5);
+                tooltip.transition()
+                  .duration(500)
+                  .style('opacity', 0);
+              });
+          } else {
+            console.warn('Coordinates could not be projected:', point);
+          }
+        });
+      }
     }).catch(error => {
       console.error('Error loading or processing CSV:', error);
     });
@@ -169,35 +179,37 @@ function App() {
     };
 
   }, []); // end of use effect for the US map
-  
-
 
   return (
     <div>
       <Header></Header>
       <div className="viz"></div>
       <div className="ski-resort-list">
-      <h2 class="centered">Your Daily Schnar Forecast</h2>
-        <div className="table">
-          <div className="table-header">
-            <div className="header__item">Ski Resort</div>
-            <div className="header__item">State</div>
-            <div className="header__item">72 Hour Snowfall</div>
-            <div className="header__item">Conditions</div>
-            <div className="header__item">Trails Open</div>
+        <h2 class="centered">Your Daily Schnar Forecast</h2>
+        {resorts.length === 0 ? (
+          <p className="centered">Looks like there is nothing to ski right now! Is it summer already?</p>
+        ) : (
+          <div className="table">
+            <div className="table-header">
+              <div className="header__item">Ski Resort</div>
+              <div className="header__item">State</div>
+              <div className="header__item">72 Hour Snowfall</div>
+              <div className="header__item">Conditions</div>
+              <div className="header__item">Trails Open</div>
+            </div>
+            <div className="table-content">
+              {resorts.map((resort, index) => (
+                <div className="table-row" key={index}>
+                  <div className="table-data">{resort['Resort Name']}</div>
+                  <div className="table-data">{resort['state']}</div>
+                  <div className="table-data">{resort['72 Hour Snowfall']}</div>
+                  <div className="table-data">{resort['Base Depth']}</div>
+                  <div className="table-data">{`${resort['Trails open']} Trails`}</div>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="table-content">
-            {resorts.map((resort, index) => (
-              <div className="table-row" key={index}>
-                <div className="table-data">{resort['Resort Name']}</div>
-                <div className="table-data">{resort['state']}</div>
-                <div className="table-data">{resort['72 Hour Snowfall']}</div>
-                <div className="table-data">{resort['Base Depth']}</div>
-                <div className="table-data">{`${resort['Trails open']} Trails`}</div>
-              </div>
-            ))}
-          </div>
-        </div>
+        )}
       </div>
       <ToastContainer />
       <Footer></Footer>

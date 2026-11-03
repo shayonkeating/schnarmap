@@ -32,44 +32,34 @@ def scrape_ski_resorts(url):
     
     Returns: ski resort information or error to the webpage
     """
-    try:
-        response = requests.get(url, timeout=10)
-        resorts_list = []
-        
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'html.parser')
-            resorts = soup.find_all("span", class_="h4 styles_h4__1nbGO")
-            
-            for resort in resorts:
-                resort_name = resort.text.strip() if resort.text else "No Name"
-                resorts_list.append([resort_name])
-            resorts_df = pd.DataFrame(resorts_list, columns=['Resort Name'])
-            
-            return resorts_df
-        else:
-            print(f"Failed to retrieve the webpage, status code: {response.status_code}")
-    except requests.exceptions.RequestException as e:
-        print(f"Request failed: {e}")
+    response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=10)
+    response.raise_for_status()
+    soup = BeautifulSoup(response.text, 'html.parser')
+    resorts_list = []
+    # table columns: Base | Lifts Open | Runs Open | 3 Day Snowfall | 3 Day Snow Forecast
+    for row in soup.select("table tbody tr"):
+        name = row.find("th", scope="row")
+        cells = [td.get_text(strip=True) for td in row.find_all("td")]
+        if not name or not name.a or len(cells) < 4:
+            continue
+        base, lifts, runs, snowfall = cells[:4]
+        resorts_list.append([name.a.get_text(strip=True), snowfall, base, runs, lifts])
+    if not resorts_list:
+        raise RuntimeError(f"No resorts found at {url}, page layout probably changed again")
+    return pd.DataFrame(resorts_list, columns=['Resort Name', '72 Hour Snowfall', 'Base Depth', 'Trails open', 'Open lifts'])
 
 
 def reformat_ski(df, column_names = None):
     """
     Reformats the ski data into a readable format and elimates fluff from web scrape
-    
+
     Args: input from scrape_ski_resorts
-    
+
     Returns: apropriately reshaped dataframe that is read for merging and loading
     """
-    reshaped_data = []
-    data_column = df.iloc[:, 0]
-    for start in range(0, len(data_column), 5):
-        group = data_column[start:start + 5].tolist()
-        reshaped_data.append(group)
-    reshaped_df = pd.DataFrame(reshaped_data, columns=['Resort Name', '72 Hour Snowfall', 'Base Depth', 'Trails open', 'Open lifts'])
-    reshaped_df['72 Hour Snowfall'] = reshaped_df['72 Hour Snowfall'].str.replace("-", "", regex=False)
-    reshaped_df['72 Hour Snowfall'] = reshaped_df['72 Hour Snowfall'].str.replace("", "", regex=False)
-    reshaped_df['Open lifts'] = reshaped_df['Open lifts'].str.replace("-", "", regex=False)
-    reshaped_df['Trails open'] = reshaped_df['Trails open'].str.replace(r'\/\d+.*', '', regex=True)
+    reshaped_df = df.copy()
+    for col in ['72 Hour Snowfall', 'Base Depth', 'Trails open', 'Open lifts']:
+        reshaped_df[col] = reshaped_df[col].str.replace(r'\s*/.*', '', regex=True).replace('-', '')
     reshaped_df['Resort Name'] = reshaped_df['Resort Name'].str.replace(r'Ski Area', '', regex=True)
     reshaped_df['Resort Name'] = reshaped_df['Resort Name'].str.replace(r'Resort', '', regex=True)
     reshaped_df['Resort Name'] = reshaped_df['Resort Name'].str.replace(r'Mountain', '', regex=True)
